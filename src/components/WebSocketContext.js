@@ -11,7 +11,7 @@ export const WebSocketProvider = ({ children }) => {
   useEffect(() => {
     let socket;
     // WebSocket connection
-    socket = new WebSocket("wss://backend.ezly.site");
+    socket = new WebSocket('wss://backend.ezly.site');
 
     socket.onopen = () => {
       console.log('WebSocket connected');
