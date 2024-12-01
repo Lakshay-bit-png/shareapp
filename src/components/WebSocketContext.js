@@ -11,7 +11,7 @@ export const WebSocketProvider = ({ children }) => {
   useEffect(() => {
     let socket;
     // WebSocket connection
-    socket = new WebSocket('ws://localhost:3001');
+    socket = new WebSocket(`ws://${process.env.WS_SOCKET || "localhost:3001"}`);
 
     socket.onopen = () => {
       console.log('WebSocket connected');
