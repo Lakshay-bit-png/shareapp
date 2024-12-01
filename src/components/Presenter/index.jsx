@@ -10,7 +10,7 @@ import PasswordModal from "./PasswordModal";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const Presenter = ({showForm, setTotalStorage}) => {
+const Presenter = ({showForm,setShowForm, setTotalStorage}) => {
   const [folderData, setFolderData] = useState(null);
   const [fileData,setFileData] = useState(null);
   const fileInputRef = useRef(null);
@@ -220,6 +220,11 @@ const Presenter = ({showForm, setTotalStorage}) => {
             
     </input>
     </div>}
+    {!fileData && (<div className="flex justify-end md:hidden p-4 rounded-xl bg-black">
+      <button className="flex items-center w-full">
+            <span className="text-white font-medium" onClick={()=> setShowForm(!showForm)}>+ Create New</span>
+          </button>
+    </div>)}
     </div>
       <section>
         <h2 className="text-lg font-semibold mb-4">Folders</h2>
@@ -237,7 +242,16 @@ const Presenter = ({showForm, setTotalStorage}) => {
             </thead>
             {fileData && <Files setNullFolder={setNullFolder} fileData = {fileData} setFileData={setFileData}/>}
             <tbody>
-              
+            {!fileData && !folderData &&(<>
+              <tr>
+                <td className="p-4 text-left"></td>
+                <td className="p-4 text-left"></td>
+                <td className="p-4 text-left text-gray-400">No Folder Exists</td>
+                <td className="p-4 text-left"></td>
+                <td className="p-4 text-left"></td>
+                <td className="p-4 text-left"></td>
+              </tr>
+            </>)}
             {!fileData && folderData && Object.keys(folderData).length > 0 &&
               Object.entries(folderData).map(([key, folder], index) => (
                 <tr key={index} className="border-b" onClick={() => folder?.secured ? openFolderAuth(key,folder.secured) : openFolder(key)}>

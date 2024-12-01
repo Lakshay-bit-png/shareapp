@@ -10,7 +10,7 @@ export const Main = () => {
     <>
       <div className="relative flex md:flex-row h-screen w-full flex-col">
         <Navigator showForm={showForm} setShowForm={setShowForm} totalStorage={totalStorage} />
-        <Presenter showForm={showForm} setTotalStorage={setTotalStorage}/>
+        <Presenter showForm={showForm} setShowForm={setShowForm} setTotalStorage={setTotalStorage}/>
       </div>
     </>
   );

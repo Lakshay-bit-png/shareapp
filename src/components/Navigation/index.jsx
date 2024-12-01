@@ -5,8 +5,9 @@ import CreateFolderForm from '../Presenter/AddForm';
 export const Navigator = ({showForm,setShowForm,totalStorage}) => {
 
   return (
+    <>{showForm && <CreateFolderForm showForm={showForm} setShowForm={setShowForm}/>}
     <div className="fixed hidden items-center w-full h-full bg-white md:h-screen md:w-64 md:justify-between md:visible md:flex  md:flex-col border-r md:border-b border-gray-200 transition-all duration-200 ease-in-out">
-        {showForm && <CreateFolderForm showForm={showForm} setShowForm={setShowForm}/>}
+        
       {/* Logo */}
       <div className="p-4 flex items-center justify-center md:justify-start">
         <span className="font-bold text-xl text-gray-800 flex items-center">
@@ -63,5 +64,6 @@ export const Navigator = ({showForm,setShowForm,totalStorage}) => {
         </button>
       </div>
     </div>
+    </>
   );
 };
