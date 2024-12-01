@@ -54,7 +54,7 @@ export const Files = ({ setNullFolder, fileData }) => {
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline"
                 >
-                  {file.fileUrl.split('/').pop() || "Unknown File"}
+                  {file?.fileUrl?.split('/').pop() || "Unknown File"}
                 </a>
               </td>
 
