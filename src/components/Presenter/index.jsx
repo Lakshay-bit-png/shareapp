@@ -9,15 +9,19 @@ import FileUpload from "./ProgressTrack";
 import PasswordModal from "./PasswordModal";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import UploadProgress from "../Uploader";
+import { v4 as uuidv4 } from 'uuid';
 
-const Presenter = ({showForm,setShowForm, setTotalStorage}) => {
+const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage}) => {
   const [folderData, setFolderData] = useState(null);
   const [fileData,setFileData] = useState(null);
   const fileInputRef = useRef(null);
-  const { messages } = useWebSocket();
+  const [uuid,setuuid] = useState(null)
+  // const { messages } = useWebSocket();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [folderName, setFolderName] = useState(null);
   const maxSize = 1 * 1024 * 1024 * 1024; // 1 GB in bytes
+  const [fileName,setFileName] = useState(null)
 
  
   const getInfo = async () => {
@@ -33,7 +37,6 @@ const Presenter = ({showForm,setShowForm, setTotalStorage}) => {
   
   const openFolder = async (name) => {
     try {
-      console.log("clicked");
       let y = await api.get("/api/folder/get", { folderName: name, allow: true });
       localStorage.setItem("currentFolder", JSON.stringify({ name }));
       setFolderName(name);
@@ -106,7 +109,10 @@ const Presenter = ({showForm,setShowForm, setTotalStorage}) => {
   
   const handleFileChange = async (event) => {
     try {
+      const newUuid = uuidv4();
       const file = event.target.files[0];
+      setFileName(file.name)
+      setuuid(newUuid)
       if (file && file.size > maxSize) toast.alert(`File Size can't be greate than 1GB `)
       if (file) {
        
@@ -114,10 +120,13 @@ const Presenter = ({showForm,setShowForm, setTotalStorage}) => {
         const formData = new FormData();
         formData.append("file", file); // File
         formData.append("folderName", folderName); // Add folder name or other data as needed
+        formData.append('uuid',newUuid);
         // Make the API call to upload the file
         const response = await api.post("/api/files/upload", formData);
-  
+        setFileName(null)
         toast.success("File uploaded successfully!");
+        openFolder(folderName)
+        
       }
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -141,9 +150,10 @@ const Presenter = ({showForm,setShowForm, setTotalStorage}) => {
         onSubmit={handlePasswordSubmit}
       />
     <div className=" md:ml-60 flex-grow  bg-gray-50 p-8 transition-all duration-200 ease-in-out">
-    {messages!=null  && Object.keys(messages).length>0 && (
-  <FileUpload progress={messages?.message} fileName={messages?.fileName} />
-)}
+    {/* {fileName!=null && (
+  <FileUpload progress={messages?.percentage} fileName={messages?.fileName} />
+)} */}
+{fileName && <UploadProgress messages={messages} setMessages={setMessages} uuid={uuid} fileName={fileName} folderName={folderName}/>}
 
       {/* Header */}
       

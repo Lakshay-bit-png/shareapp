@@ -3,7 +3,7 @@ import fold from '../../../assets/fold.png'
 import filei from '../../../assets/file.png'
 
 export const Files = ({ setNullFolder, fileData }) => {
-    console.log(fileData)
+
   return (
 
     <>

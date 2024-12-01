@@ -13,7 +13,7 @@ import { Files } from './Presenter/Files';
 
 const AppRouter = () => {
     return (
-        <WebSocketProvider>
+       
         <Router>
             <Routes>
                 {/* Define your routes */}
@@ -22,7 +22,7 @@ const AppRouter = () => {
                 <Route path="/re" element={<HomePage />} /> */}
             </Routes>
         </Router>
-    </WebSocketProvider>
+
     );
 };
 
