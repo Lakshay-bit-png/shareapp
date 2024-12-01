@@ -17,6 +17,7 @@ const Presenter = ({showForm, setTotalStorage}) => {
   const { messages } = useWebSocket();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [folderName, setFolderName] = useState(null);
+  const maxSize = 1 * 1024 * 1024 * 1024; // 1 GB in bytes
 
  
   const getInfo = async () => {
@@ -106,21 +107,16 @@ const Presenter = ({showForm, setTotalStorage}) => {
   const handleFileChange = async (event) => {
     try {
       const file = event.target.files[0];
+      if (file && file.size > maxSize) toast.alert(`File Size can't be greate than 1GB `)
       if (file) {
-        console.log("Selected file:", file.name);
-        console.log(file);
-  
+       
         // Form data for the API call
         const formData = new FormData();
         formData.append("file", file); // File
         formData.append("folderName", folderName); // Add folder name or other data as needed
-  
-        console.log(formData);
-  
         // Make the API call to upload the file
         const response = await api.post("/api/files/upload", formData);
   
-        console.log("File upload successful:", response.data);
         toast.success("File uploaded successfully!");
       }
     } catch (error) {
@@ -222,7 +218,7 @@ const Presenter = ({showForm, setTotalStorage}) => {
 
     <input type="file" id="file" ref={fileInputRef} onChange={handleFileChange} className="hidden">
             
-          </input>
+    </input>
     </div>}
     </div>
       <section>
@@ -243,32 +239,30 @@ const Presenter = ({showForm, setTotalStorage}) => {
             <tbody>
               
             {!fileData && folderData && Object.keys(folderData).length > 0 &&
-  Object.entries(folderData).map(([key, folder], index) => (
-    <tr key={index} className="border-b" onClick={() => folder?.secured ? openFolderAuth(key,folder.secured) : openFolder(key)}>
-      <td className="flex gap-4 p-4">
-        <img className="h-6 w-6" src={fold} />
-        {key || "G docs"}
-      </td>
-      <td className="p-4 text-gray-500">
-        {folder?.updatedAt ? folder.updatedAt : "2 min ago"}
-      </td>
-      <td className="p-4">{folder?.storage || "0"}</td>
-      <td className="p-4">{folder?.owner || "Me"}</td>
-      <td className="p-4 flex items-center space-x-2">
-        <img
-          className="w-6 h-6 rounded-full"
-          src={folder?.memberImage || "https://via.placeholder.com/24"}
-          alt="Member"
-        />
-        <span className="text-gray-500">
-          {folder?.extraMembers || "+5"}
-        </span>
-      </td>
-      <td className="text-xl p">{folder?.secured ? <PiLockSimpleBold/> : <FaLockOpen /> || "0"}</td>
-    </tr>
-  ))}
-
-
+              Object.entries(folderData).map(([key, folder], index) => (
+                <tr key={index} className="border-b" onClick={() => folder?.secured ? openFolderAuth(key,folder.secured) : openFolder(key)}>
+                  <td className="flex gap-4 p-4">
+                    <img className="h-6 w-6" src={fold} />
+                    {key || "G docs"}
+                  </td>
+                  <td className="p-4 text-gray-500">
+                    {folder?.updatedAt ? folder.updatedAt : "2 min ago"}
+                  </td>
+                  <td className="p-4">{folder?.storage || "0"}</td>
+                  <td className="p-4">{folder?.owner || "Me"}</td>
+                  <td className="p-4 flex items-center space-x-2">
+                    <img
+                      className="w-6 h-6 rounded-full"
+                      src={folder?.memberImage || "https://via.placeholder.com/24"}
+                      alt="Member"
+                    />
+                    <span className="text-gray-500">
+                      {folder?.extraMembers || "+5"}
+                    </span>
+                  </td>
+                  <td className="text-xl p">{folder?.secured ? <PiLockSimpleBold/> : <FaLockOpen /> || "0"}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
