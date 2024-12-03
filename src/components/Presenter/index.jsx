@@ -2,6 +2,8 @@ import React, { useEffect, useState ,useRef } from "react";
 import api from "../../services/api";
 import fold from '../../assets/fold.png'
 import { useWebSocket } from '../WebSocketContext';
+import { messaging } from "./../firebase";
+import { getToken } from "firebase/messaging";
 import { Files } from "./Files";
 import { PiLockSimpleBold, PiLockSimpleOpenBold } from "react-icons/pi";
 import { FaLockOpen } from "react-icons/fa6";
@@ -22,6 +24,27 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
   const [folderName, setFolderName] = useState(null);
   const maxSize = 1 * 1024 * 1024 * 1024; // 1 GB in bytes
   const [fileName,setFileName] = useState(null)
+  const [registrationToken, setRegistrationToken] = useState("");
+
+  async function requestPermission() {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        const token = await getToken(messaging, {
+          vapidKey: "BOOcaQUA8w3rOlYkpmK2NFZfL52Tu8NURu2A5zjd_jrVG7LOAsgbR_la9dRgtv85aP-MXkgODl5AlYI9ASIY_3U",
+        });
+        console.log("Token Generated:", token);
+        setRegistrationToken(token);
+      } else {
+        console.warn("Notification permissions denied");
+      }
+    } catch (error) {
+      console.error("Error getting token:", error);
+    }
+  }
+  useEffect(() => {
+    requestPermission();
+  }, []);
 
  
   const getInfo = async () => {
@@ -121,9 +144,11 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
         formData.append("file", file); // File
         formData.append("folderName", folderName); // Add folder name or other data as needed
         formData.append('uuid',newUuid);
+        formData.append("fcmToken",registrationToken);
         // Make the API call to upload the file
         const response = await api.post("/api/files/upload", formData);
         setFileName(null)
+        setuuid(null)
         toast.success("File uploaded successfully!");
         openFolder(folderName)
         
