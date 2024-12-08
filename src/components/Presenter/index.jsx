@@ -25,6 +25,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
   const maxSize = 1 * 1024 * 1024 * 1024; // 1 GB in bytes
   const [fileName,setFileName] = useState(null)
   const [registrationToken, setRegistrationToken] = useState("");
+  const [ip,setIp] = useState(null)
 
   async function requestPermission() {
     try {
@@ -52,6 +53,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
       const x = await api.get("/api/folder/get", {});
       setFolderData(x.data.data);
       setTotalStorage(x.data.total);
+      setIp(x.data.ip)
     } catch (error) {
       console.error("Error fetching folder info:", error);
       toast.error("Failed to fetch, Please try again.");
@@ -184,7 +186,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
       
       <header className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold">Hi, Asaa</h1>
+          <h1 className="text-2xl font-semibold">Hi, {ip || 'Getting your IP'}</h1>
           <div className="flex items-center text-gray-500 gap-2">
             <span className={folderName ? "border-b border-blue-500 transition-all duration-200 ease-in-out":"transition-all duration-200 ease-in-out"} onClick={setNullFolder}>Home</span>
             {folderName && <span>&gt; {folderName}</span>}
