@@ -9,6 +9,10 @@ const UploadProgress = ({ messages, setMessages,uuid, fileName,folderName }) => 
         // Create an EventSource to connect to the SSE endpoint
         const eventSource = new EventSource(`https://backend.ezly.site/api/uploadPercentage?folderName=${folderName}`);
 
+        eventSource.onopen = () => {
+          console.log('SSE connection opened.');
+      };
+      
         // Listen for messages from the server
         eventSource.onmessage = (event) => {
             try {
