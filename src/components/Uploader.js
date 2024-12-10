@@ -35,7 +35,7 @@ const UploadProgress = ({ messages, setMessages,uuid, fileName,folderName }) => 
             console.log('Closing SSE connection for file:', fileName);
             eventSource.close();
         };
-    }, [messages]); // Dependency array ensures this runs when fileName changes
+    }, [fileName,folderName,messages]); // Dependency array ensures this runs when fileName changes
 
     return (
       <div className="fixed flex flex-col gap-2 bottom-4 right-4 shadow-xl w-80 bg-gray-50 rounded-lg p-4">
