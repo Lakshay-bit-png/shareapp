@@ -1,8 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import cloud from '../../assets/cloud.jpg'
 import CreateFolderForm from '../Presenter/AddForm';
+import api from "../../services/api";
 
-export const Navigator = ({showForm,setShowForm,totalStorage}) => {
+export const Navigator = ({showForm,setShowForm}) => {
+  const [totalStorage,setTotalStorage] = useState(0);
+  const getInfo = async () => {
+    try {
+      const x = await api.get("/api/folder/get", {});
+      setTotalStorage(x.data.total)
+    } catch (error) {
+  
+    }
+  };
+
+  useEffect(()=>{
+    getInfo()
+  },[])
 
   return (
     <>{showForm && <CreateFolderForm showForm={showForm} setShowForm={setShowForm}/>}

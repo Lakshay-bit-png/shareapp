@@ -20,6 +20,7 @@ code {
 body{
   overflow-x: hidden;
   width:100vw;
+  background-color: rgb(249, 249, 249);
   padding:0;
   margin:0;
 

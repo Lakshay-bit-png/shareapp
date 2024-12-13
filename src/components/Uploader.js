@@ -7,7 +7,7 @@ import { MdOutlineFileCopy } from "react-icons/md";
 const UploadProgress = ({ messages, setMessages,uuid, fileName,folderName }) => {
     useEffect(() => {
         // Create an EventSource to connect to the SSE endpoint
-        const eventSource = new EventSource(`https://backend.ezly.site/api/uploadPercentage?folderName=${folderName}`);
+        const eventSource = new EventSource(`http://localhost:3002/api/uploadPercentage?folderName=${folderName}`);
 
         eventSource.onopen = () => {
           console.log('SSE connection opened.');
@@ -46,7 +46,8 @@ const UploadProgress = ({ messages, setMessages,uuid, fileName,folderName }) => 
       
       {/* Iterate through messages */}
       {messages?.map((message, index) => (
-        <div key={index} className="flex items-center justify-between mt-2">
+        <>
+       {message.percentage>0 && message.percentage<100 && <div key={index} className="flex items-center justify-between mt-2">
           {/* File Details */}
           <div className="flex items-center gap-2">
             <MdOutlineFileCopy />
@@ -64,7 +65,8 @@ const UploadProgress = ({ messages, setMessages,uuid, fileName,folderName }) => 
               text={`${message?.percentage<100 && message?.percentage>0 ? message.percentage : 0}%`}
             />
           </div>
-        </div>
+        </div>}
+        </>
       ))}
     </div>
     

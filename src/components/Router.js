@@ -5,6 +5,8 @@ import { Navigator } from './Navigation';
 import { Main } from './Main';
 import { WebSocketProvider } from './WebSocketContext';
 import { Files } from './Presenter/Files';
+import SSETest from './test';
+import { Share, Shared } from './Share';
 
 
 // Import your components/pages
@@ -18,6 +20,8 @@ const AppRouter = () => {
             <Routes>
                 {/* Define your routes */}
                 <Route path="/" element={<Main />} />
+                <Route path="/share/*" element={<Shared />} />
+                <Route path="/test" element ={<SSETest/>}/>
                 {/* <Route path="/ret" element={<Files />} />
                 <Route path="/re" element={<HomePage />} /> */}
             </Routes>

@@ -6,6 +6,10 @@ import { messaging } from "./../firebase";
 import { getToken } from "firebase/messaging";
 import { Files } from "./Files";
 import { PiLockSimpleBold, PiLockSimpleOpenBold } from "react-icons/pi";
+import { FaRegShareSquare } from "react-icons/fa";
+import { MdOutlineDelete } from "react-icons/md";
+import { CgOptions } from "react-icons/cg";
+import { MdOutlineDriveFileRenameOutline } from "react-icons/md";
 import { FaLockOpen } from "react-icons/fa6";
 import FileUpload from "./ProgressTrack";
 import PasswordModal from "./PasswordModal";
@@ -25,7 +29,8 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
   const maxSize = 1 * 1024 * 1024 * 1024; // 1 GB in bytes
   const [fileName,setFileName] = useState(null)
   const [registrationToken, setRegistrationToken] = useState("");
-  const [ip,setIp] = useState(null)
+  const [ip,setIp] = useState(null);
+  const [shareAbleLink,setShareLink] = useState(null)
 
   async function requestPermission() {
     try {
@@ -52,7 +57,6 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
     try {
       const x = await api.get("/api/folder/get", {});
       setFolderData(x.data.data);
-      setTotalStorage(x.data.total);
       setIp(x.data.ip)
     } catch (error) {
       console.error("Error fetching folder info:", error);
@@ -67,8 +71,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
       setFolderName(name);
       setFileData(y.data.data);
     } catch (error) {
-      console.error("Error opening folder:", error);
-      toast.error("Error opening folder. Please try again.");
+      
     }
   };
   
@@ -127,8 +130,8 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
         openFolder(name);
       }
     } catch (error) {
-      console.error("Error in useEffect:", error);
-      toast.error("Error loading stored folder data.");
+      localStorage.removeItem("currentFolder");
+      setFolderName(null)
     }
   }, [messages]);
   
@@ -160,6 +163,20 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
       toast.error("Error uploading file. Please try again.");
     }
   };
+
+
+  const getShareableLinkForThisEntity = async(key)=>{
+    try{
+      const data = {
+        isFile:folderName,
+        folderName:key
+      }
+      const link = await api.post('/api/share/generateLink',data)
+      await navigator.clipboard.writeText(link?.data?.link);
+      toast.success('Link Copied to Clipboard')
+    }
+    catch{}
+  }
 
   
 
@@ -266,18 +283,18 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
       <section>
         <h2 className="text-lg font-semibold mb-4">Folders</h2>
         <div className="overflow-x-auto">
-          <table className="w-full bg-white rounded-lg shadow-md">
+          <table className="w-full bg-white rounded-lg shadow-md  overflow-hidden">
             <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
               <tr>
                 <th className="p-4 text-left">Name</th>
                 <th className="p-4 text-left">Last Modified</th>
                 <th className="p-4 text-left">Size</th>
-                <th className="p-4 text-left">Owner</th>
-                <th className="p-4 text-left">Members</th>
-                <th className="p-4 text-left"></th>
+               
+                <th className="p-4 text-center ">Members</th>
+                {/* <th className="p-4 text-left"></th> */}
               </tr>
             </thead>
-            {fileData && <Files setNullFolder={setNullFolder} fileData = {fileData} setFileData={setFileData}/>}
+            {fileData && <Files setNullFolder={setNullFolder} fileData = {fileData} setFileData={setFileData} folderName={folderName}/>}
             <tbody>
             {!fileData && !folderData &&(<>
               <tr>
@@ -285,35 +302,58 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
                 <td className="p-4 text-left"></td>
                 <td className="p-4 text-left text-gray-400">No Folder Exists</td>
                 <td className="p-4 text-left"></td>
-                <td className="p-4 text-left"></td>
-                <td className="p-4 text-left"></td>
+                
               </tr>
             </>)}
-            {!fileData && folderData && Object.keys(folderData).length > 0 &&
-              Object.entries(folderData).map(([key, folder], index) => (
-                <tr key={index} className="border-b" onClick={() => folder?.secured ? openFolderAuth(key,folder.secured) : openFolder(key)}>
-                  <td className="flex gap-4 p-4">
-                    <img className="h-6 w-6" src={fold} />
-                    {key || "G docs"}
-                  </td>
-                  <td className="p-4 text-gray-500">
-                    {folder?.updatedAt ? folder.updatedAt : "2 min ago"}
-                  </td>
-                  <td className="p-4">{folder?.storage || "0"}</td>
-                  <td className="p-4">{folder?.owner || "Me"}</td>
-                  <td className="p-4 flex items-center space-x-2">
-                    <img
-                      className="w-6 h-6 rounded-full"
-                      src={folder?.memberImage || "https://via.placeholder.com/24"}
-                      alt="Member"
-                    />
-                    <span className="text-gray-500">
-                      {folder?.extraMembers || "+5"}
-                    </span>
-                  </td>
-                  <td className="text-xl p">{folder?.secured ? <PiLockSimpleBold/> : <FaLockOpen /> || "0"}</td>
-                </tr>
-              ))}
+            {!fileData &&
+  folderData &&
+  Object.keys(folderData).length > 0 &&
+  Object.entries(folderData).map(([key, folder], index) => (
+    <tr key={index} className="border-b z-2">
+      <td
+        className="flex gap-4 p-4 cursor-pointer"
+        onClick={() => (folder?.secured ? openFolderAuth(key, folder.secured) : openFolder(key))}
+      >
+        <img className="h-6 w-6" src={fold} alt="folder-icon" />
+        {key.substring(0, 24) || "G docs"}
+      </td>
+      <td className="p-4 text-gray-500">{folder?.updatedAt || "2 min ago"}</td>
+      <td className="p-4">{folder?.storage || "0"}</td>
+      <td className="relative p-4 flex justify-center items-center space-x-2 ">
+        {/* Wrapper for hover functionality */}
+        <div className="group relative">
+          {/* CgOptions Icon */}
+          <CgOptions className="text-gray-500 text-xl cursor-pointer hover:text-gray-700" />
+          {/* Dropdown Menu */}
+          <div
+            className="absolute right-0 top-0 bg-black text-white text-sm rounded-lg opacity-0 invisible 
+              group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out 
+              flex flex-col py-2 shadow-lg z-10"
+          >
+            <div
+              className="hover:bg-gray-700 p-2 rounded cursor-pointer flex items-center"
+              onClick={() => getShareableLinkForThisEntity(key)}
+            >
+              <FaRegShareSquare className="mr-2" /> Share
+            </div>
+            <div
+              className="hover:bg-gray-700 p-2 rounded cursor-pointer flex items-center"
+              onClick={() => console.log('Delete folder')}
+            >
+              <MdOutlineDelete className="mr-2" /> Delete
+            </div>
+            <div
+              className="hover:bg-gray-700 p-2 rounded cursor-pointer flex items-center"
+              onClick={() => console.log('Rename folder')}
+            >
+              <MdOutlineDriveFileRenameOutline className="mr-2" /> Rename
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  ))}
+
             </tbody>
           </table>
         </div>
