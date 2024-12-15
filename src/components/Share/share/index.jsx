@@ -52,9 +52,9 @@ export const Share = () => {
   }, []);
 
   return (
-    <div className="md:ml-60 flex-grow bg-gray-50 p-8 transition-all duration-200 ease-in-out">
+    <div className="md:ml-60  flex-grow bg-gray-50 p-8 transition-all duration-200 ease-in-out">
       <h3 className="text-2xl font-bold mb-6">Shared - {folder|| ""}</h3>
-     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ">
   {fileData &&
     fileData?.map((file, index) => (
       <div

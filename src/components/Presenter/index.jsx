@@ -5,12 +5,13 @@ import { useWebSocket } from '../WebSocketContext';
 import { messaging } from "./../firebase";
 import { getToken } from "firebase/messaging";
 import { Files } from "./Files";
-import { PiLockSimpleBold, PiLockSimpleOpenBold } from "react-icons/pi";
+import { HiOutlineLockOpen } from "react-icons/hi2";
+
+import { GoLock } from "react-icons/go";
 import { FaRegShareSquare } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
 import { CgOptions } from "react-icons/cg";
 import { MdOutlineDriveFileRenameOutline } from "react-icons/md";
-import { FaLockOpen } from "react-icons/fa6";
 import FileUpload from "./ProgressTrack";
 import PasswordModal from "./PasswordModal";
 import { ToastContainer, toast } from 'react-toastify';
@@ -178,6 +179,44 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
     catch{}
   }
 
+  const renameThisFolder = async (folderId, currentName, isSecured) => {
+    const newName = prompt("Enter the new folder name:");
+    if (!newName) {
+      toast.warning("Folder name cannot be empty.");
+      return;
+    }
+  
+    let password = "";
+  
+    // If the folder is secured, prompt for the password
+    if (isSecured) {
+      password = prompt("This folder is secured. Enter the password:");
+      if (!password) {
+        toast.warning("Password is required for secured folders.");
+        return;
+      }
+    }
+  
+    try {
+      const response = await api.put('/api/folder/rename', {
+        folderName: currentName,
+        newName,
+        password,
+      });
+  
+      if (response.status === 200) {
+        toast.success("Folder renamed successfully!");
+        // Refresh or update UI logic here
+      } else {
+        toast.error("Failed to rename the folder.");
+      }
+    } catch (error) {
+      console.error("Error renaming folder:", error);
+      toast.error("An error occurred while renaming the folder.");
+    }
+  };
+  
+
   
 
   
@@ -210,31 +249,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
           </div>
           
         </div>
-        <div className="flex items-center space-x-4">
-          <button className="bg-gray-200 rounded-full p-2">
-            <svg
-              className="w-6 h-6 text-gray-600"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M9 2a7 7 0 110 14A7 7 0 019 2zm0 12a5 5 0 100-10 5 5 0 000 10zm7-5a1 1 0 100-2 1 1 0 000 2z" />
-            </svg>
-          </button>
-          <button className="bg-gray-200 rounded-full p-2">
-            <svg
-              className="w-6 h-6 text-gray-600"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M2.293 8.707a1 1 0 011.414 0L10 14.999l6.293-6.292a1 1 0 111.414 1.415l-7 7a1 1 0 01-1.414 0l-7-7a1 1 0 010-1.415z" />
-            </svg>
-          </button>
-          <img
-            className="w-10 h-10 rounded-full object-cover"
-            src="https://via.placeholder.com/40"
-            alt="User"
-          />
-        </div>
+        
       </header>
 
       {/* Quick Access Section */}
@@ -291,6 +306,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
                 <th className="p-4 text-left">Size</th>
                
                 <th className="p-4 text-center ">Members</th>
+                <th></th>
                 {/* <th className="p-4 text-left"></th> */}
               </tr>
             </thead>
@@ -302,7 +318,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
                 <td className="p-4 text-left"></td>
                 <td className="p-4 text-left text-gray-400">No Folder Exists</td>
                 <td className="p-4 text-left"></td>
-                
+                <td></td>
               </tr>
             </>)}
             {!fileData &&
@@ -337,21 +353,18 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
               <FaRegShareSquare className="mr-2" /> Share
             </div>
             <div
-              className="hover:bg-gray-700 p-2 rounded cursor-pointer flex items-center"
-              onClick={() => console.log('Delete folder')}
-            >
-              <MdOutlineDelete className="mr-2" /> Delete
-            </div>
-            <div
-              className="hover:bg-gray-700 p-2 rounded cursor-pointer flex items-center"
-              onClick={() => console.log('Rename folder')}
-            >
-              <MdOutlineDriveFileRenameOutline className="mr-2" /> Rename
-            </div>
+  className="hover:bg-gray-700 p-2 rounded cursor-pointer flex items-center"
+  onClick={() => renameThisFolder(key, key || "Unnamed Folder", folder?.secured)}
+>
+  <MdOutlineDriveFileRenameOutline className="mr-2" /> Rename
+</div>
+
           </div>
         </div>
       </td>
+      <td className="text-xl p">{folder?.secured ? <GoLock/> : <HiOutlineLockOpen /> || "0"}</td>
     </tr>
+    
   ))}
 
             </tbody>

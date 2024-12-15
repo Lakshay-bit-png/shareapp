@@ -7,7 +7,8 @@ import { MdOutlineFileCopy } from "react-icons/md";
 const UploadProgress = ({ messages, setMessages,uuid, fileName,folderName }) => {
     useEffect(() => {
         // Create an EventSource to connect to the SSE endpoint
-        const eventSource = new EventSource(`http://localhost:3002/api/uploadPercentage?folderName=${folderName}`);
+        // const eventSource = new EventSource(`http://localhost:3001/api/uploadPercentage?folderName=${folderName}`);
+        const eventSource = new EventSource(`https://backend.ezly.site/api/uploadPercentage?folderName=${folderName}`);
 
         eventSource.onopen = () => {
           console.log('SSE connection opened.');

@@ -27,6 +27,21 @@ export const Files = ({ setNullFolder, fileData ,folderName }) => {
     catch{}
   }
 
+  const addFileToTrash = async(fileUrl)=> { 
+    try{
+      const body = {
+        folderName : folderName,
+        fileId : fileUrl
+      }
+      const response = await api.post('/api/files/trash/add',body)
+      if(response.status==200) toast.success(response.data.message)
+      else{ toast.error(response.data.message)}
+    } 
+    catch{
+      toast.error('Some Error Occurred')
+    }
+  }
+
   return (
 
     <>
@@ -108,16 +123,11 @@ export const Files = ({ setNullFolder, fileData ,folderName }) => {
             </div>
             <div
               className="hover:bg-gray-700 p-2 rounded cursor-pointer flex items-center"
-              onClick={() => console.log("Delete file")}
+              onClick={() => addFileToTrash(file?.fileUrl)}
             >
               <MdOutlineDelete className="mr-2" /> Delete
             </div>
-            <div
-              className="hover:bg-gray-700 p-2 rounded cursor-pointer flex items-center"
-              onClick={() => console.log("Rename file")}
-            >
-              <MdOutlineDriveFileRenameOutline className="mr-2" /> Rename
-            </div>
+            
           </div>
         </div>
       </td>
