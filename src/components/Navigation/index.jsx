@@ -14,10 +14,14 @@ export const Navigator = ({ showForm, setShowForm, showCreate }) => {
   const [totalStorage, setTotalStorage] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const getSize = (sizeInBytes)=> {
+    return (sizeInBytes / (1024 * 1024 *1024)).toFixed(2); 
+  }
+
   const getInfo = async () => {
     try {
       const x = await api.get("/api/folder/get", {});
-      setTotalStorage(x.data.total);
+      setTotalStorage(getSize(x?.data?.total));
     } catch (error) {
       console.error(error);
     }

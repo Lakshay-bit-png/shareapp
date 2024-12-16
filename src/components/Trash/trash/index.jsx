@@ -10,6 +10,18 @@ export const Trash = () => {
     const [showModal, setShowModal] = useState(false);
     const [fileIdToDelete, setFileIdToDelete] = useState(null);
     const [fileName,setFileName] =useState(null)
+    const [size,setSize]= useState(null)
+    const [createdAt , setCreatedAt] = useState(null)
+
+    const getSize = (sizeInBytes)=>{
+        if (sizeInBytes < 1024) {
+          return `${sizeInBytes} B`; // Bytes
+        } else if (sizeInBytes < 1024 * 1024) {
+          return `${(sizeInBytes / 1024).toFixed(2)} KB`; // Kilobytes
+        } else {
+          return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`; // Megabytes
+        }
+      }
 
     const getMyTrashRepo = async () => {
         try {
@@ -30,12 +42,11 @@ export const Trash = () => {
         }
     };
 
-    const restoreFile = async (fileId,fileName) => {
+    const restoreFile = async (fileData) => {
         try {
             await api.post(`/api/files/trash/restoreFile`,{
                 folderName:currentFolderName,
-                fileId:fileId,
-                fileName:fileName
+                fileData:fileData
             });
             toast.success('File Restored Successfully')
         } catch (error) {
@@ -43,9 +54,11 @@ export const Trash = () => {
         }
     };
 
-    const deleteForever = async (fileId,fileName) => {
-        setFileIdToDelete(fileId); // Set the file ID to be deleted
-        setFileName(fileName)
+    const deleteForever = async (fileData) => {
+        setFileIdToDelete(fileData.fileUrl); // Set the file ID to be deleted
+        setFileName(fileData.name);
+        setSize(fileData.size);
+        setCreatedAt(fileData.createdAt)
         setShowModal(true); // Show the modal
     };
 
@@ -53,8 +66,12 @@ export const Trash = () => {
         try {
             await api.post(`/api/files/trash/deleteFile/`,{
                 folderName:currentFolderName,
-                fileId:fileIdToDelete,
-                fileName:fileName
+                fileData:{
+                    name: fileName,
+                    size:size,
+                    fileUrl:fileIdToDelete,
+                    createdAt:createdAt
+                }
 
             });
             setFiles(files.filter(file => file.fileUrl !== fileIdToDelete));
@@ -112,19 +129,19 @@ export const Trash = () => {
                             files.length > 0 ? (
                                 files.map((file, index) => (
                                     <tr key={index} className="border-b hover:bg-gray-50">
-                                        <td className="p-4">{file.fileName || "Unnamed"}</td>
+                                        <td className="p-4">{file?.name || "Unnamed"}</td>
                                         <td className="p-4 text-gray-500">{file.type || "File"}</td>
-                                        <td className="p-4 text-gray-500">{file.size || "0 KB"}</td>
+                                        <td className="p-4 text-gray-500">{getSize(file?.size) || "0 KB"}</td>
                                         <td className="p-4 text-center">
                                             <button
                                                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                                onClick={() => restoreFile(file.fileUrl,file.fileName)}
+                                                onClick={() => restoreFile({fileUrl : file?.fileUrl ,name: file?.name,size:file?.size,createdAt:file.createdAt})}
                                             >
                                                 Restore
                                             </button>
                                             <button
                                                 className="ml-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                                                onClick={() => deleteForever(file.fileUrl,file.fileName)}
+                                                onClick={() => deleteForever({fileUrl : file?.fileUrl ,name: file?.name,size:file?.size,createdAt:file.createdAt})}
                                             >
                                                 Delete Forever
                                             </button>

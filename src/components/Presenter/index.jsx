@@ -53,6 +53,16 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
     requestPermission();
   }, []);
 
+  const getSize = (sizeInBytes)=>{
+    if (sizeInBytes < 1024) {
+      return `${sizeInBytes} B`; // Bytes
+    } else if (sizeInBytes < 1024 * 1024) {
+      return `${(sizeInBytes / 1024).toFixed(2)} KB`; // Kilobytes
+    } else {
+      return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`; // Megabytes
+    }
+  }
+
  
   const getInfo = async () => {
     try {
@@ -334,7 +344,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
         {key.substring(0, 24) || "G docs"}
       </td>
       <td className="p-4 text-gray-500">{folder?.updatedAt || "2 min ago"}</td>
-      <td className="p-4">{folder?.storage || "0"}</td>
+      <td className="p-4">{getSize(folder?.storage) || "0"}</td>
       <td className="relative p-4 flex justify-center items-center space-x-2 ">
         {/* Wrapper for hover functionality */}
         <div className="group relative">

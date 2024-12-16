@@ -27,11 +27,21 @@ export const Files = ({ setNullFolder, fileData ,folderName }) => {
     catch{}
   }
 
-  const addFileToTrash = async(fileUrl)=> { 
+  const getSize = (sizeInBytes)=>{
+    if (sizeInBytes < 1024) {
+      return `${sizeInBytes} B`; // Bytes
+    } else if (sizeInBytes < 1024 * 1024) {
+      return `${(sizeInBytes / 1024).toFixed(2)} KB`; // Kilobytes
+    } else {
+      return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`; // Megabytes
+    }
+  }
+
+  const addFileToTrash = async(fileData)=> { 
     try{
       const body = {
         folderName : folderName,
-        fileId : fileUrl
+        fileData :fileData
       }
       const response = await api.post('/api/files/trash/add',body)
       if(response.status==200) toast.success(response.data.message)
@@ -102,7 +112,7 @@ export const Files = ({ setNullFolder, fileData ,folderName }) => {
       </td>
 
       {/* Placeholder for owner and size (if available) */}
-      <td className="p-4">{file.size || 0}</td>
+      <td className="p-4">{getSize(file?.size) || 0}</td>
 
       {/* Dropdown options */}
       <td className="relative p-4">
@@ -123,7 +133,7 @@ export const Files = ({ setNullFolder, fileData ,folderName }) => {
             </div>
             <div
               className="hover:bg-gray-700 p-2 rounded cursor-pointer flex items-center"
-              onClick={() => addFileToTrash(file?.fileUrl)}
+              onClick={() => addFileToTrash({fileUrl :file?.fileUrl, name:file?.fileUrl?.split('/').pop(),size:file?.size,createdAt:file?.createdAt })}
             >
               <MdOutlineDelete className="mr-2" /> Delete
             </div>
