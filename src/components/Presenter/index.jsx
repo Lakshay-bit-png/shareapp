@@ -29,7 +29,6 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
   const [folderName, setFolderName] = useState(null);
   const maxSize = 1 * 1024 * 1024 * 1024; // 1 GB in bytes
   const [fileName,setFileName] = useState(null)
-  const [registrationToken, setRegistrationToken] = useState("");
   const [ip,setIp] = useState(null);
   const [shareAbleLink,setShareLink] = useState(null)
 
@@ -43,7 +42,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
           vapidKey: "BOOcaQUA8w3rOlYkpmK2NFZfL52Tu8NURu2A5zjd_jrVG7LOAsgbR_la9dRgtv85aP-MXkgODl5AlYI9ASIY_3U",
         });
         console.log("Token Generated:", token);
-        setRegistrationToken(token);
+        saveRegistrationToken(token);
       } else {
         console.warn("Notification permissions denied");
       }
@@ -54,6 +53,15 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
   useEffect(() => {
     requestPermission();
   }, []);
+
+  const saveRegistrationToken = async(token)=>{
+    try{
+      await api.post('/api/saveToken',{
+        fcmToken: token
+      })
+    }
+    catch{}
+  }
 
   const getSize = (sizeInBytes)=>{
     if (sizeInBytes < 1024) {
@@ -162,7 +170,6 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
         formData.append("file", file); // File
         formData.append("folderName", folderName); // Add folder name or other data as needed
         formData.append('uuid',newUuid);
-        formData.append("fcmToken",registrationToken);
         // Make the API call to upload the file
         const response = await api.post("/api/files/upload", formData);
         setFileName(null)
@@ -182,7 +189,6 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
   const sendPushNotif = async()=> {
     try{
       const response = await api.post('/api/sendFcm',{
-        fcmToken : registrationToken,
         dataPayload : "A New File has been uploaded to your Repo"
       })
       console.log(response)
