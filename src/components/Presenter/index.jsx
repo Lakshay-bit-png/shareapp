@@ -182,7 +182,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
   const sendPushNotif = async()=> {
     try{
       const response = await api.post('/api/sendFcm',{
-        fcmToken : "d0vyePyuESYGs8e0PwtjXO:APA91bFP8y5jy5CTSJ2SepdlK9UiPth6On-jqU9GQkPwFm8QC4Lk7x7olNruFMNI3HnKxEz0-5bFNPkjOOYuwTJ5w76Z4l-rOZ4T5q66RcYt8MZg1sTQyeE",
+        fcmToken : registrationToken,
         dataPayload : "A New File has been uploaded to your Repo"
       })
       console.log(response)
