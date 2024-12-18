@@ -15,7 +15,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
+const icon ="https://www.capturingreality.com/assets/Images/H67_1.png"
+
 messaging.onBackgroundMessage((payload) => {
+
+  console.log('jhefrce')
   console.log(
     "[firebase-messaging-sw.js] Received background message ",
     payload
@@ -23,7 +27,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: payload.notification.image,
+    icon: icon
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);

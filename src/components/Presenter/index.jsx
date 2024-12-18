@@ -36,6 +36,8 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
   async function requestPermission() {
     try {
       const permission = await Notification.requestPermission();
+
+      console.log(permission)
       if (permission === "granted") {
         const token = await getToken(messaging, {
           vapidKey: "BOOcaQUA8w3rOlYkpmK2NFZfL52Tu8NURu2A5zjd_jrVG7LOAsgbR_la9dRgtv85aP-MXkgODl5AlYI9ASIY_3U",
@@ -167,6 +169,8 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
         setuuid(null)
         toast.success("File uploaded successfully!");
         openFolder(folderName)
+
+        sendPushNotif()
         
       }
     } catch (error) {
@@ -175,7 +179,16 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
     }
   };
 
-
+  const sendPushNotif = async()=> {
+    try{
+      const response = await api.post('/api/sendFcm',{
+        fcmToken : "d0vyePyuESYGs8e0PwtjXO:APA91bFP8y5jy5CTSJ2SepdlK9UiPth6On-jqU9GQkPwFm8QC4Lk7x7olNruFMNI3HnKxEz0-5bFNPkjOOYuwTJ5w76Z4l-rOZ4T5q66RcYt8MZg1sTQyeE",
+        dataPayload : "A New File has been uploaded to your Repo"
+      })
+      console.log(response)
+    }
+    catch{}
+  }
   const getShareableLinkForThisEntity = async(key)=>{
     try{
       const data = {
@@ -249,7 +262,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
 {fileName && <UploadProgress messages={messages} setMessages={setMessages} uuid={uuid} fileName={fileName} folderName={folderName}/>}
 
       {/* Header */}
-      
+      {/* <button onClick={()=>{sendPushNotif()}}>rv</button> */}
       <header className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-semibold">Hi, {ip || 'Getting your IP'}</h1>
