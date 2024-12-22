@@ -83,7 +83,7 @@ export const Navigator = ({ showForm, setShowForm, showCreate }) => {
       </div>
 
       {/* Mobile Navbar */}
-      <div className="md:hidden">
+      <div className="md:hidden fixed w-full">
         {/* Hamburger Icon */}
         <div className="bg-gray-900 text-white p-4 flex items-center justify-between">
           <span className="font-bold text-xl">File Cloud<span className="text-red-500">.</span></span>

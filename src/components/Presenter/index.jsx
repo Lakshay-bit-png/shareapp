@@ -271,7 +271,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
       {/* <button onClick={()=>{sendPushNotif()}}>rv</button> */}
       <header className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold">Hi, {ip || 'Getting your IP'}</h1>
+          <h1 className="text-2xl font-semibold mt-12 md:mt-0">Hi, {ip || 'Getting your IP'}</h1>
           <div className="flex items-center text-gray-500 gap-2">
             <span className={folderName ? "border-b border-blue-500 transition-all duration-200 ease-in-out":"transition-all duration-200 ease-in-out"} onClick={setNullFolder}>Home</span>
             {folderName && <span>&gt; {folderName}</span>}
