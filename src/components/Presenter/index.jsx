@@ -18,6 +18,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UploadProgress from "../Uploader";
 import { v4 as uuidv4 } from 'uuid';
+import SocketDataFetcher from "../datafetch";
 
 const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage}) => {
   const [folderData, setFolderData] = useState(null);
@@ -27,7 +28,7 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
   // const { messages } = useWebSocket();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [folderName, setFolderName] = useState(null);
-  const maxSize = 1 * 1024 * 1024 * 1024; // 1 GB in bytes
+  const maxSize = 0.4 * 1024 * 1024 * 1024; // 0.4 * 1 GB in bytes
   const [fileName,setFileName] = useState(null)
   const [ip,setIp] = useState(null);
   const [shareAbleLink,setShareLink] = useState(null)
@@ -265,8 +266,8 @@ const Presenter = ({messages,setMessages,showForm,setShowForm, setTotalStorage})
     {/* {fileName!=null && (
   <FileUpload progress={messages?.percentage} fileName={messages?.fileName} />
 )} */}
-{fileName && <UploadProgress messages={messages} setMessages={setMessages} uuid={uuid} fileName={fileName} folderName={folderName}/>}
-
+{/* {fileName && <UploadProgress messages={messages} setMessages={setMessages} uuid={uuid} fileName={fileName} folderName={folderName}/>} */}
+     {fileName && <SocketDataFetcher ip={ip} folderName={folderName}/>} 
       {/* Header */}
       {/* <button onClick={()=>{sendPushNotif()}}>rv</button> */}
       <header className="flex items-center justify-between mb-8">
