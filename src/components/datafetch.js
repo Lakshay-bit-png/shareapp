@@ -30,7 +30,7 @@ useEffect(() => {
         // Fetch data every 500ms using setInterval
         const interval = setInterval(() => {
             socket.emit('fetchStatus', { ip: ip, folderName: folderName });
-        }, 50);
+        }, 5);
 
         // Cleanup on component unmount
         return () => {
